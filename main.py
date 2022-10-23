@@ -15,7 +15,8 @@ ORG = "UNCW-CSC-450"
 
 class UserStats:
 
-    def __init__(self):
+    def __init__(self, name: str = None):
+        self.name = name
         self.pulls = []
         self.commits = []
 
@@ -28,36 +29,37 @@ if __name__ == "__main__":
 
     org = g.get_organization(ORG)
     repos = [
-        'csc450fa22-project-group-4',
-        'csc450fa22-project-group-7',
-        'csc450fa22-project-group-8',
-        'csc450fa22-project-group-6',
         'csc450fa22-project-team-1-1',
         'csc450fa22-project-team-2',
         'csc450fa22-project-team-3',
-        'csc450fa22-project-team-5'
+        'csc450fa22-project-group-4',
+        'csc450fa22-project-team-5',
+        'csc450fa22-project-group-6',
+        'csc450fa22-project-group-7',
+        'csc450fa22-project-group-8',
     ]
 
     for repo in repos:
         r = org.get_repo(repo)
+        print('=' * 10)
         print(r.full_name)
 
         user_stats: Dict[str, UserStats] = {}
-        # TODO: Count pull requests
 
         for c in r.get_commits(since=SPRINT_1.start, until=SPRINT_1.end):
+            # Commits can have no author for unknown reasons. At least the REST API doesn't return one.
+            if c.author is None:
+                print(f"c.author is None: https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
+                continue
             if c.author.login not in user_stats:
-                user_stats[c.author.login] = UserStats()
+                user_stats[c.author.login] = UserStats(c.author.name)
             user_stats[c.author.login].commits.append(c)
 
         for p in r.get_pulls(state="all"):
             user_stats[p.user.login].pulls.append(p)
 
-
-
-
         for author, stats in user_stats.items():
-            print(f"\n\n{author} - {len(stats.commits)} commits, {len(stats.pulls)} PRs")
+            print(f"\n\n{author} ({stats.name}) - {len(stats.commits)} commits, {len(stats.pulls)} PRs")
             print(f'\tCommits: {len(stats.commits)}')
             for c in stats.commits:
                 # the commit's last_modified is when it was merged into main
@@ -65,9 +67,9 @@ if __name__ == "__main__":
                 # format is Mon, 10 Oct 2022 21:33:08 GMT
                 # last_mod = c.stats.last_modified
                 # formatted = datetime.strptime(last_mod, "%a, %d %b %Y %X %Z")
-                print(f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
-                      f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
+                print(
+                    f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
+                    f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
             print(f'\tPRs:{len(stats.pulls)}')
             for p in stats.pulls:
                 print(f"\t\t{p.created_at} {p.html_url}")
-        exit()
