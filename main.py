@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import json
 
@@ -7,10 +7,6 @@ from github import Github
 from typing import Dict
 
 Sprint = namedtuple('Sprint', 'start end')
-SPRINT_1 = Sprint(datetime(2022, 10, 7, tzinfo=ZoneInfo('US/Eastern')),
-                  datetime(2022, 10, 20, tzinfo=ZoneInfo('US/Eastern')))
-
-ORG = "UNCW-CSC-450"
 
 
 class UserStats:
@@ -19,15 +15,14 @@ class UserStats:
         self.name = name
         self.pulls = []
         self.commits = []
+        self.issues = []
 
 
-if __name__ == "__main__":
-
+def get_stats_for_sprint(sprint: Sprint):
     with open("token.json", "r") as token_file:
         token = json.load(token_file)
     g = Github(token['token'])
-
-    org = g.get_organization(ORG)
+    org = g.get_organization("UNCW-CSC-450")
     repos = [
         'csc450fa22-project-team-1-1',
         'csc450fa22-project-team-2',
@@ -46,30 +41,52 @@ if __name__ == "__main__":
 
         user_stats: Dict[str, UserStats] = {}
 
-        for c in r.get_commits(since=SPRINT_1.start, until=SPRINT_1.end):
-            # Commits can have no author for unknown reasons. At least the REST API doesn't return one.
+        # Gather commits authored by a user. This may be separate from the committer due to merging.
+        for c in r.get_commits(since=sprint.start, until=sprint.end):
+            # Commits can have no author for unknown reasons.
             if c.author is None:
                 print(f"c.author is None: https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
                 continue
-            if c.author.login not in user_stats:
-                user_stats[c.author.login] = UserStats(c.author.name)
-            user_stats[c.author.login].commits.append(c)
+            user_stats.setdefault(c.author.login, UserStats(c.author.name)).commits.append(c)
 
+        # Gather user-initiated PRs
         for p in r.get_pulls(state="all"):
-            user_stats[p.user.login].pulls.append(p)
+            if p.created_at.replace(tzinfo=timezone.utc) > sprint.start:
+                user_stats[p.user.login].pulls.append(p)
 
+        # Gather user-assigned issues
+        for i in r.get_issues(state='all'):
+            if i.assignees:
+                for assignee in i.assignees:
+                    user_stats.setdefault(assignee.login, UserStats(assignee.login)).issues.append(i)
+
+        # Loop over user_stats dictionary to compute statistics on a per-user basis.
         for author, stats in user_stats.items():
-            print(f"\n\n{author} ({stats.name}) - {len(stats.commits)} commits, {len(stats.pulls)} PRs")
+            print(
+                f"\n\n{author} ({stats.name}) - {len(stats.commits)} commits, {len(stats.pulls)} PRs, {len(stats.issues)} issues assigned")
+
+            # Compute commit statistics
             print(f'\tCommits: {len(stats.commits)}')
             for c in stats.commits:
                 # the commit's last_modified is when it was merged into main
                 # the commitStats last_modified is when the source files were last worked on
                 # format is Mon, 10 Oct 2022 21:33:08 GMT
-                # last_mod = c.stats.last_modified
-                # formatted = datetime.strptime(last_mod, "%a, %d %b %Y %X %Z")
                 print(
                     f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
                     f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
-            print(f'\tPRs:{len(stats.pulls)}')
+
+            # compute pull request statistics
+            pr_stats = {}
+            for p in stats.pulls:
+                pr_stats[p.state] = pr_stats.get(p.state, 0) + 1
+
+            print(f'\tPRs:{len(stats.pulls)}, {pr_stats}')
             for p in stats.pulls:
                 print(f"\t\t{p.created_at} {p.html_url}")
+
+
+if __name__ == "__main__":
+    SPRINT_1 = Sprint(datetime(2022, 10, 7, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(2022, 10, 20, tzinfo=ZoneInfo('US/Eastern')))
+
+    get_stats_for_sprint(SPRINT_1)
