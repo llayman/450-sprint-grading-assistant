@@ -88,5 +88,7 @@ def get_stats_for_sprint(sprint: Sprint):
 if __name__ == "__main__":
     SPRINT_1 = Sprint(datetime(2022, 10, 7, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(2022, 10, 20, tzinfo=ZoneInfo('US/Eastern')))
+    SPRINT_2 = Sprint(datetime(2022, 10, 21, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(2022, 11, 3, tzinfo=ZoneInfo('US/Eastern')))
 
-    get_stats_for_sprint(SPRINT_1)
+    get_stats_for_sprint(SPRINT_2)
