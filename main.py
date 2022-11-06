@@ -1,10 +1,11 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
-import json
 
 from collections import namedtuple
-from github import Github
-from typing import Dict
+from github import PullRequest, Commit, Issue
+from typing import Dict, List
+
+import config
 
 Sprint = namedtuple('Sprint', 'start end')
 
@@ -13,29 +14,14 @@ class UserStats:
 
     def __init__(self, name: str = None):
         self.name = name
-        self.pulls = []
-        self.commits = []
-        self.issues = []
+        self.pulls: List[PullRequest] = []
+        self.commits: List[Commit] = []
+        self.issues: List[Issue] = []
 
 
 def get_stats_for_sprint(sprint: Sprint):
-    with open("token.json", "r") as token_file:
-        token = json.load(token_file)
-    g = Github(token['token'])
-    org = g.get_organization("UNCW-CSC-450")
-    repos = [
-        'csc450fa22-project-team-1-1',
-        'csc450fa22-project-team-2',
-        'csc450fa22-project-team-3',
-        'csc450fa22-project-group-4',
-        'csc450fa22-project-team-5',
-        'csc450fa22-project-group-6',
-        'csc450fa22-project-group-7',
-        'csc450fa22-project-group-8',
-    ]
-
-    for repo in repos:
-        r = org.get_repo(repo)
+    for repo in config.REPOS:
+        r = config.org.get_repo(repo)
         print('=' * 10)
         print(r.full_name)
 
@@ -52,7 +38,7 @@ def get_stats_for_sprint(sprint: Sprint):
         # Gather user-initiated PRs
         for p in r.get_pulls(state="all"):
             if p.created_at.replace(tzinfo=timezone.utc) > sprint.start:
-                user_stats[p.user.login].pulls.append(p)
+                user_stats.setdefault(p.user.login, UserStats(p.user.login)).pulls.append(p)
 
         # Gather user-assigned issues
         for i in r.get_issues(state='all'):
@@ -64,6 +50,12 @@ def get_stats_for_sprint(sprint: Sprint):
         for author, stats in user_stats.items():
             print(
                 f"\n\n{author} ({stats.name}) - {len(stats.commits)} commits, {len(stats.pulls)} PRs, {len(stats.issues)} issues assigned")
+
+            # Show issues
+            print(f'\tIssues: {len(stats.issues)}')
+            for i in stats.issues:
+                print(
+                    f'\t\t{i.state.upper()} ({"" if i.milestone is None else i.milestone.title}) {i.title[:64]} https://github.com/{r.full_name}/issues/{i.number}"')
 
             # Compute commit statistics
             print(f'\tCommits: {len(stats.commits)}')
