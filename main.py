@@ -63,6 +63,9 @@ def get_stats_for_sprint(sprint: Sprint):
                 # the commit's last_modified is when it was merged into main
                 # the commitStats last_modified is when the source files were last worked on
                 # format is Mon, 10 Oct 2022 21:33:08 GMT
+
+                # TODO: Figure a way to print the branch name
+                # TODO: print commit comment
                 print(
                     f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
                     f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
@@ -83,4 +86,7 @@ if __name__ == "__main__":
     SPRINT_2 = Sprint(datetime(2022, 10, 21, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(2022, 11, 3, tzinfo=ZoneInfo('US/Eastern')))
 
-    get_stats_for_sprint(SPRINT_2)
+    SPRINT_3 = Sprint(datetime(year=2022, month=11, day=3, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2022, month=11, day=17, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')))
+
+    get_stats_for_sprint(SPRINT_3)

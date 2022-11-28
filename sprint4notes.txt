@@ -1,0 +1,2 @@
+-5: Does not fulfill minimum of 1 commit/7-day cycle requirement.
+-10: User story progress made but not completed.
