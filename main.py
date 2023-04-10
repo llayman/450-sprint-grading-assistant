@@ -94,8 +94,8 @@ def get_stats_for_sprint(sprint: Sprint):
 if __name__ == "__main__":
     SPRINT_1 = Sprint(datetime(2023, 2, 23, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(2023, 3, 14, tzinfo=ZoneInfo('US/Eastern')))
-    SPRINT_2 = Sprint(datetime(2022, 10, 21, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(2022, 11, 3, tzinfo=ZoneInfo('US/Eastern')))
+    SPRINT_2 = Sprint(datetime(year=2023, month=3, day=14, hour=14, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=3, day=27, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_3 = Sprint(datetime(year=2022, month=11, day=3, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2022, month=11, day=17, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')))
@@ -103,4 +103,4 @@ if __name__ == "__main__":
     SPRINT_4 = Sprint(datetime(year=2022, month=11, day=17, hour=14, minute=11, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2022, month=12, day=6, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    get_stats_for_sprint(SPRINT_1)
+    get_stats_for_sprint(SPRINT_2)

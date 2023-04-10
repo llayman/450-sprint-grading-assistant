@@ -5,6 +5,7 @@ with open("token.json", "r") as token_file:
     token = json.load(token_file)
 _g = Github(token['token'])
 org = _g.get_organization("UNCW-CSC-450")
+
 REPOS = [
     'csc450-sp23-project-team1',
     'csc450-sp23-project-team-2',
