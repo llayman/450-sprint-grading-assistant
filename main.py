@@ -1,4 +1,8 @@
+import logging
+import sys
+
 from datetime import datetime, timezone, timedelta
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from collections import namedtuple
@@ -7,8 +11,7 @@ from typing import Dict, List
 
 import config
 
-Sprint = namedtuple('Sprint', 'start end')
-
+Sprint = namedtuple('Sprint', 'title start end')
 
 class UserStats:
 
@@ -20,10 +23,12 @@ class UserStats:
 
 
 def get_stats_for_sprint(sprint: Sprint):
+    log = logging.getLogger()
+
     for repo in config.REPOS:
         r = config.org.get_repo(repo)
-        print('=' * 10)
-        print(r.full_name)
+        log.info('=' * 10)
+        log.info(r.full_name)
 
         user_stats: Dict[str, UserStats] = {}
 
@@ -31,7 +36,7 @@ def get_stats_for_sprint(sprint: Sprint):
         for c in r.get_commits(since=sprint.start, until=sprint.end):
             # Commits can have no author for unknown reasons.
             if c.author is None:
-                print(f"c.author is None: https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
+                log.info(f"c.author is None: https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
                 continue
             user_stats.setdefault(c.author.login, UserStats(c.author.name)).commits.append(c)
 
@@ -50,17 +55,17 @@ def get_stats_for_sprint(sprint: Sprint):
         # Loop over user_stats dictionary to compute statistics on a per-user basis.
         for author, stats in user_stats.items():
             has_printed_cutoff = False
-            print(
+            log.info(
                 f"\n\n{author} ({stats.name}) - {len(stats.commits)} commits, {len(stats.pulls)} PRs, {len(stats.issues)} issues assigned")
 
             # Show issues
-            print(f'\tIssues: {len(stats.issues)}')
+            log.info(f'\tIssues: {len(stats.issues)}')
             for i in stats.issues:
-                print(
+                log.info(
                     f'\t\t{i.state.upper()} ({"" if i.milestone is None else i.milestone.title}) {i.title[:64]} https://github.com/{r.full_name}/issues/{i.number}')
 
             # Compute commit statistics
-            print(f'\tCommits: {len(stats.commits)}')
+            log.info(f'\tCommits: {len(stats.commits)}')
             for c in stats.commits:
                 # the commit's last_modified is when it was merged into main
                 # the commitStats last_modified is when the source files were last worked on
@@ -68,39 +73,53 @@ def get_stats_for_sprint(sprint: Sprint):
                 date_format = '%a, %d %b %Y %H:%M:%S %Z'
                 commit_date = datetime.strptime(c.stats.last_modified, date_format).replace(tzinfo=timezone.utc)
                 if commit_date < sprint_first_week_cutoff and not has_printed_cutoff:
-                    print(f'\t\t----- FIRST WEEK END -----')
+                    log.info(f'\t\t----- FIRST WEEK END -----')
                     has_printed_cutoff = True
 
 
                 # TODO: Figure a way to print the branch name
                 # TODO: print commit comment
-                print(
+                log.info(
                     f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
                     f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
 
             if not has_printed_cutoff:
-                print(f'\t\t----- FIRST WEEK END -----')
+                log.info(f'\t\t----- FIRST WEEK END -----')
 
             # compute pull request statistics
             pr_stats = {}
             for p in stats.pulls:
                 pr_stats[p.state] = pr_stats.get(p.state, 0) + 1
 
-            print(f'\tPRs:{len(stats.pulls)}, {pr_stats}')
+            log.info(f'\tPRs:{len(stats.pulls)}, {pr_stats}')
             for p in stats.pulls:
-                print(f"\t\t{p.created_at} {p.html_url}")
+                log.info(f"\t\t{p.created_at} {p.html_url}")
 
 
 if __name__ == "__main__":
-    SPRINT_1 = Sprint(datetime(2023, 2, 23, tzinfo=ZoneInfo('US/Eastern')),
+    SPRINT_1 = Sprint("Sprint1",
+                      datetime(2023, 2, 23, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(2023, 3, 14, tzinfo=ZoneInfo('US/Eastern')))
-    SPRINT_2 = Sprint(datetime(year=2023, month=3, day=14, hour=14, tzinfo=ZoneInfo('US/Eastern')),
+    SPRINT_2 = Sprint("Sprint2",
+                      datetime(year=2023, month=3, day=14, hour=14, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2023, month=3, day=27, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    SPRINT_3 = Sprint(datetime(year=2022, month=11, day=3, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2022, month=11, day=17, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')))
+    SPRINT_3 = Sprint("Sprint3",
+                      datetime(year=2023, month=3, day=28, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=4, day=10, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    SPRINT_4 = Sprint(datetime(year=2022, month=11, day=17, hour=14, minute=11, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2022, month=12, day=6, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+    SPRINT_4 = Sprint("Sprint4",
+                      datetime(year=2023, month=11, day=17, hour=14, minute=11, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=12, day=6, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    get_stats_for_sprint(SPRINT_2)
+    active_sprint = SPRINT_3
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(message)s",
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+            logging.FileHandler(Path('logs') / f'{active_sprint.title}.log', 'w+')
+        ]
+    )
+
+    get_stats_for_sprint(active_sprint)
