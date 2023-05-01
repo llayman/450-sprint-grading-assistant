@@ -1,13 +1,13 @@
 import logging
 import sys
-
+from collections import namedtuple
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from typing import Dict, List
 from zoneinfo import ZoneInfo
 
-from collections import namedtuple
 from github import PullRequest, Commit, Issue
-from typing import Dict, List
+from github.GithubObject import NotSet
 
 import config
 
@@ -22,18 +22,18 @@ class UserStats:
         self.issues: List[Issue] = []
 
 
-def get_stats_for_sprint(sprint: Sprint):
+def get_stats_for_sprint(sprint: Sprint, branch: str = None):
     log = logging.getLogger()
 
     for repo in config.REPOS:
-        r = config.org.get_repo(repo)
+        r = config.org.get_repo(repo['name'])
         log.info('=' * 10)
         log.info(r.full_name)
 
         user_stats: Dict[str, UserStats] = {}
 
         # Gather commits authored by a user. This may be separate from the committer due to merging.
-        for c in r.get_commits(since=sprint.start, until=sprint.end):
+        for c in r.get_commits(since=sprint.start, until=sprint.end, sha=repo.get('branch', NotSet)):
             # Commits can have no author for unknown reasons.
             if c.author is None:
                 log.info(f"c.author is None: https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
@@ -109,16 +109,16 @@ if __name__ == "__main__":
                       datetime(year=2023, month=4, day=10, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_4 = Sprint("Sprint4",
-                      datetime(year=2023, month=11, day=17, hour=14, minute=11, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=12, day=6, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2023, month=4, day=11, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=4, day=26, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_3
+    active_sprint = SPRINT_4
     logging.basicConfig(
         level=logging.INFO,
         format="%(message)s",
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(Path('logs') / f'{active_sprint.title}.log', 'w+')
+            logging.FileHandler(Path('logs') / f'{active_sprint.title}-Team8.log', 'w+')
         ]
     )
 
