@@ -112,13 +112,17 @@ if __name__ == "__main__":
                       datetime(year=2023, month=4, day=11, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2023, month=4, day=26, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_4
+    SPRINT_5 = Sprint("Sprint5",
+                      datetime(year=2023, month=4, day=27, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=5, day=1, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+
+    active_sprint = SPRINT_5
     logging.basicConfig(
         level=logging.INFO,
         format="%(message)s",
         handlers=[
             logging.StreamHandler(sys.stdout),
-            logging.FileHandler(Path('logs') / f'{active_sprint.title}-Team8.log', 'w+')
+            logging.FileHandler(Path('logs') / f'{active_sprint.title}.log', 'w+')
         ]
     )
 
