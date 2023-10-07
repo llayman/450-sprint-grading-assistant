@@ -121,6 +121,11 @@ if __name__ == "__main__":
                       datetime(year=2023, month=5, day=1, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     active_sprint = SPRINT_0
+
+    from pathlib import Path
+
+    # creating a new directory called pythondirectory
+    Path("logs").mkdir(exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(message)s",
