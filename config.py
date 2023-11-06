@@ -16,6 +16,7 @@ REPOS = [
     {'name': 'csc450-fa23-project-team-5'},
     {'name': 'csc450-fa23-project-team-6'},
     {'name': 'csc450-fa23-project-team-7'},
+    {'name': 'csc450-fa23-project-team7-vue'},
     # {'name': 'csc450-sp23-project-team-8', 'branch': 'jonahMerge'},
     {'name': 'csc450-fa23-project-team-8'},
     {'name': 'csc450-fa23-project-team-9'},

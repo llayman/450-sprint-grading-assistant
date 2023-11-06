@@ -42,7 +42,7 @@ def get_stats_for_sprint(sprint: Sprint, branch: str = None):
 
         # Gather user-initiated PRs
         for p in r.get_pulls(state="all"):
-            if p.created_at.replace(tzinfo=timezone.utc) > sprint.start:
+            if sprint.start <= p.created_at.replace(tzinfo=timezone.utc) <= sprint.end:
                 user_stats.setdefault(p.user.login, UserStats(p.user.login)).pulls.append(p)
 
         # Gather user-assigned issues
@@ -62,7 +62,7 @@ def get_stats_for_sprint(sprint: Sprint, branch: str = None):
             log.info(f'\tIssues: {len(stats.issues)}')
             for i in stats.issues:
                 log.info(
-                    f'\t\t{i.state.upper()} ({"" if i.milestone is None else i.milestone.title}) {i.title[:64]} https://github.com/{r.full_name}/issues/{i.number}')
+                    f'\t\t{i.state.upper()} ({"" if i.milestone is None else i.milestone.title}) #{i.number} {i.title[:64]} https://github.com/{r.full_name}/issues/{i.number}')
 
             # Compute commit statistics
             log.info(f'\tCommits: {len(stats.commits)}')
@@ -80,7 +80,7 @@ def get_stats_for_sprint(sprint: Sprint, branch: str = None):
                 # TODO: Figure a way to print the branch name
                 # TODO: print commit comment
                 log.info(
-                    f"\t\t{c.stats.last_modified} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
+                    f"\t\t{to_local_time(c.stats.last_modified)} {len(c.files)} files, total:{c.stats.total} adds:{c.stats.additions} "
                     f"deletes:{c.stats.deletions} https://github.com/{r.full_name}/commit/{c.url.split('/')[-1]}")
 
             if not has_printed_cutoff:
@@ -93,8 +93,15 @@ def get_stats_for_sprint(sprint: Sprint, branch: str = None):
 
             log.info(f'\tPRs:{len(stats.pulls)}, {pr_stats}')
             for p in stats.pulls:
-                log.info(f"\t\t{p.created_at} {p.html_url}")
+                log.info(f"\t\t{to_local_time(p.created_at)} {p.html_url}")
 
+
+def to_local_time(utc_date):
+    if isinstance(utc_date, str):
+        date_format = '%a, %d %b %Y %H:%M:%S %Z'
+        utc_date = datetime.strptime(utc_date, date_format).replace(tzinfo=timezone.utc)
+
+    return utc_date.astimezone().strftime('%Y-%m-%d %H:%M:%S %Z')
 
 if __name__ == "__main__":
     SPRINT_0 = Sprint("Sprint0",
@@ -102,11 +109,11 @@ if __name__ == "__main__":
                       datetime(year=2023, month=10, day=4, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
     
     SPRINT_1 = Sprint("Sprint1",
-                      datetime(2023, 2, 23, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(2023, 3, 14, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(2023, 10, 5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')), # class time day after to ignore those late night commits from previous Sprint
+                      datetime(2023, 10, 19, hour=12, minute=30 , tzinfo=ZoneInfo('US/Eastern'))) #class time the day after to include late night commits
     SPRINT_2 = Sprint("Sprint2",
-                      datetime(year=2023, month=3, day=14, hour=14, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=3, day=27, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(2023, 10, 19, hour=12, minute=30 , tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(2023, 11, 2, hour=12, minute=30 , tzinfo=ZoneInfo('US/Eastern'))) #class time the day after to include late night commits
 
     SPRINT_3 = Sprint("Sprint3",
                       datetime(year=2023, month=3, day=28, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
@@ -120,7 +127,7 @@ if __name__ == "__main__":
                       datetime(year=2023, month=4, day=27, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2023, month=5, day=1, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_0
+    active_sprint = SPRINT_2
 
     from pathlib import Path
 
