@@ -116,18 +116,18 @@ if __name__ == "__main__":
                       datetime(2023, 11, 2, hour=12, minute=30 , tzinfo=ZoneInfo('US/Eastern'))) #class time the day after to include late night commits
 
     SPRINT_3 = Sprint("Sprint3",
-                      datetime(year=2023, month=3, day=28, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=4, day=10, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2023, month=11, day=2, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_4 = Sprint("Sprint4",
-                      datetime(year=2023, month=4, day=11, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=4, day=26, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_5 = Sprint("Sprint5",
                       datetime(year=2023, month=4, day=27, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
                       datetime(year=2023, month=5, day=1, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_2
+    active_sprint = SPRINT_4
 
     from pathlib import Path
 
