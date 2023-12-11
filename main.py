@@ -51,7 +51,7 @@ def get_stats_for_sprint(sprint: Sprint, branch: str = None):
                 for assignee in i.assignees:
                     user_stats.setdefault(assignee.login, UserStats(assignee.login)).issues.append(i)
 
-        sprint_first_week_cutoff = sprint.start + timedelta(days=8)
+        sprint_first_week_cutoff = sprint.end - timedelta(days=7)
         # Loop over user_stats dictionary to compute statistics on a per-user basis.
         for author, stats in user_stats.items():
             has_printed_cutoff = False
