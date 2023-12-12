@@ -124,10 +124,10 @@ if __name__ == "__main__":
                       datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_5 = Sprint("Sprint5",
-                      datetime(year=2023, month=4, day=27, hour=14, minute=10, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=5, day=1, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2023, month=12, day=12, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_4
+    active_sprint = SPRINT_5
 
     from pathlib import Path
 
