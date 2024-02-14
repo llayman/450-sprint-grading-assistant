@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Dict, List
 from zoneinfo import ZoneInfo
 
-from github import PullRequest, Commit, Issue
+from github.PullRequest import PullRequest
+from github.Commit import Commit
+from github.Issue import Issue
 from github.GithubObject import NotSet
 
 import config

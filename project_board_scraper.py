@@ -47,6 +47,9 @@ def print_items_for_project(project: dict[str, str]) -> None:
     query = {
         "query": 'query{ node(id: "' + project_id + '") { ... on ProjectV2 { items(first: 100) { nodes{ id fieldValues(first: 8) { nodes{ ... on ProjectV2ItemFieldTextValue { text field { ... on ProjectV2FieldCommon {  name }}} ... on ProjectV2ItemFieldDateValue { date field { ... on ProjectV2FieldCommon { name } } } ... on ProjectV2ItemFieldSingleSelectValue { name field { ... on ProjectV2FieldCommon { name }}}}} content{ ... on DraftIssue { title body } ...on Issue { title assignees(first: 10) { nodes{ login }}} ...on PullRequest { title assignees(first: 10) { nodes{ login }}}}}}}}}'
     }
+    query = {
+        "query": 'query{ node(id: "' + project_id + '") { ... on ProjectV2 { items(first: 100) { nodes{ id fieldValues(first: 8) { nodes{ ... on ProjectV2ItemFieldTextValue { text field { ... on ProjectV2FieldCommon {  name }}} ... on ProjectV2ItemFieldDateValue { date field { ... on ProjectV2FieldCommon { name } } } ... on ProjectV2ItemFieldSingleSelectValue { name field { ... on ProjectV2FieldCommon { name }}}}} content{ ... on DraftIssue { title body } ...on Issue { title assignees(first: 10) { nodes{ login }}} ...on PullRequest { title assignees(first: 10) { nodes{ login }}}}}}}}}'
+    }
     result = _query(query)
 
     # Get a list of individual items to iterate over
@@ -80,5 +83,6 @@ if __name__ == "__main__":
     # get_items_for_project(project_id)
     projects = get_projects_for_org(config.org)
     for p in projects:
+        print(p)
         print_items_for_project(p)
 
