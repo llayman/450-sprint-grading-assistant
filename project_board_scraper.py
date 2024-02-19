@@ -52,6 +52,10 @@ def print_items_for_project(project: dict[str, str]) -> None:
     }
     result = _query(query)
 
+
+
+    
+
     # Get a list of individual items to iterate over
     items = result['data']['node']['items']['nodes']
     for item in items:
