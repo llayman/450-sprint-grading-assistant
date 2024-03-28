@@ -1,6 +1,7 @@
 import logging
 import sys
 from collections import namedtuple
+from dataclasses import dataclass
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List
 from zoneinfo import ZoneInfo
@@ -12,8 +13,12 @@ from github.GithubObject import NotSet
 
 import config
 
-Sprint = namedtuple('Sprint', 'title start end')
-
+@dataclass
+class Sprint:
+    title: str
+    start: datetime
+    end: datetime
+    first_week_cutoff: datetime = None
 
 class UserStats:
 
@@ -53,7 +58,7 @@ def get_stats_for_sprint(sprint: Sprint):
                 for assignee in i.assignees:
                     user_stats.setdefault(assignee.login, UserStats(assignee.login)).issues.append(i)
 
-        sprint_first_week_cutoff = sprint.end - timedelta(days=7)
+        sprint_first_week_cutoff = sprint.first_week_cutoff if sprint.first_week_cutoff is not None else sprint.end - timedelta(days=7)
         # Loop over user_stats dictionary to compute statistics on a per-user basis.
         for author, stats in user_stats.items():
             has_printed_cutoff = False
@@ -111,19 +116,19 @@ if __name__ == "__main__":
                       datetime(year=2024, month=2, day=22, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_1 = Sprint("Sprint1",
-                      datetime(year=2024, month=2, day=22, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
-                      # class time day after to ignore those late night commits from previous Sprint
-                      datetime(year=2024, month=3, day=14, hour=12, minute=30,
-                               tzinfo=ZoneInfo('US/Eastern')))  # class time the day after to include late night commits
+                      start=datetime(year=2024, month=2, day=22, hour=15, minute=15, tzinfo=ZoneInfo('US/Eastern')),
+                      end=datetime(year=2024, month=3, day=14, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
+                      first_week_cutoff=datetime(year=2024, month=3, day=2, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern'))
+                      )
 
     SPRINT_2 = Sprint("Sprint2",
-                      datetime(2023, 10, 19, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(2023, 11, 2, hour=12, minute=30,
+                      datetime(year=2024, month=3, day=14, hour=15, minute=15, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2024, month=3, day=26, hour=12, minute=30,
                                tzinfo=ZoneInfo('US/Eastern')))  # class time the day after to include late night commits
 
     SPRINT_3 = Sprint("Sprint3",
-                      datetime(year=2023, month=11, day=2, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
+                      start=datetime(year=2023, month=11, day=2, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
+                      end=datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_4 = Sprint("Sprint4",
                       datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
@@ -137,7 +142,7 @@ if __name__ == "__main__":
                           datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
                           datetime(year=2023, month=12, day=14, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_0
+    active_sprint = SPRINT_2
 
     from pathlib import Path
 
