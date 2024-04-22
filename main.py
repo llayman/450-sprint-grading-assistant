@@ -127,8 +127,9 @@ if __name__ == "__main__":
                                tzinfo=ZoneInfo('US/Eastern')))  # class time the day after to include late night commits
 
     SPRINT_3 = Sprint("Sprint3",
-                      start=datetime(year=2023, month=11, day=2, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
-                      end=datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
+                      start=datetime(year=2024, month=3, day=26, hour=15, minute=00, tzinfo=ZoneInfo('US/Eastern')),
+                      end=datetime(year=2024, month=4, day=9, hour=6, minute=00, tzinfo=ZoneInfo('US/Eastern')),
+                      first_week_cutoff=datetime(year=2024, month=4, day=4, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_4 = Sprint("Sprint4",
                       datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
@@ -142,7 +143,7 @@ if __name__ == "__main__":
                           datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
                           datetime(year=2023, month=12, day=14, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_2
+    active_sprint = SPRINT_3
 
     from pathlib import Path
 
