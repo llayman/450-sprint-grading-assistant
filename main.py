@@ -132,8 +132,10 @@ if __name__ == "__main__":
                       first_week_cutoff=datetime(year=2024, month=4, day=4, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_4 = Sprint("Sprint4",
-                      datetime(year=2023, month=11, day=16, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2024, month=4, day=9, hour=15, minute=00, tzinfo=ZoneInfo('US/Eastern')),
+                      # Extra day
+                      datetime(year=2024, month=4, day=23, hour=15, minute=00, tzinfo=ZoneInfo('US/Eastern')),
+                      first_week_cutoff=datetime(year=2024, month=4, day=16, hour=23, minute=59, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_5_001 = Sprint("Sprint5",
                           datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
@@ -143,7 +145,7 @@ if __name__ == "__main__":
                           datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
                           datetime(year=2023, month=12, day=14, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_3
+    active_sprint = SPRINT_4
 
     from pathlib import Path
 
