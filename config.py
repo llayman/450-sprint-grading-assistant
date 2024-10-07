@@ -9,15 +9,9 @@ org = _g.get_organization("UNCW-CSC-450")
 
 
 REPOS = [
-    {'name': 'csc450-sp24-project-team_1'},
-    {'name': 'csc450-sp24-project-team2'},
-    {'name': 'csc450-sp24-project-team-3'},
-    {'name': 'csc450-sp24-project-team_4'},
-    {'name': 'csc450-sp24-project-group-5'},
-    {'name': 'csc450-sp24-project-team-6'},
-    {'name': 'csc450-sp24-project-team-7'},
-    {'name': 'csc450-sp24-project-team-8'},
-    {'name': 'csc450-sp24-project-team-9'},
-    {'name': 'csc450-sp24-project-team-10'},
-    {'name': 'csc450-sp24-project-team-11'},
+    {'name': 'csc450-fa24-team1'},
+    {'name': 'csc450-fa24-team2'},
+    {'name': 'csc450-fa24-team3'},
+    {'name': 'csc450-fa24-team4'},
+    {'name': 'csc450-fa24-team5'},
 ]

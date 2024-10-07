@@ -112,8 +112,8 @@ def to_local_time(utc_date):
 
 if __name__ == "__main__":
     SPRINT_0 = Sprint("Sprint0",
-                      datetime(year=2023, month=2, day=23, tzinfo=ZoneInfo('US/Eastern')),
-                      datetime(year=2024, month=2, day=22, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
+                      datetime(year=2024, month=9, day=13, tzinfo=ZoneInfo('US/Eastern')),
+                      datetime(year=2024, month=10, day=3, hour=9, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
     SPRINT_1 = Sprint("Sprint1",
                       start=datetime(year=2024, month=2, day=22, hour=15, minute=15, tzinfo=ZoneInfo('US/Eastern')),
@@ -145,7 +145,7 @@ if __name__ == "__main__":
                           datetime(year=2023, month=12, day=5, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')),
                           datetime(year=2023, month=12, day=14, hour=12, minute=30, tzinfo=ZoneInfo('US/Eastern')))
 
-    active_sprint = SPRINT_4
+    active_sprint = SPRINT_0
 
     from pathlib import Path
 
